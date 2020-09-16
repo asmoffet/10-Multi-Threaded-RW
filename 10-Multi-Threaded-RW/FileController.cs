@@ -10,6 +10,7 @@ namespace Multi_Threaded_RW
     public class FileController
     {
         private File thefile;  // the file controlled by this controller
+        private bool open = false;
 
         // I.  DECLARE AND USE A STATE VARIABLE THAT REMEMBERS STATE OF thefile's USE
         // II. ADD CODE TO PREVENT TWO THREADS FROM OPENING THE FILE AT THE SAME INSTANT.
@@ -21,26 +22,44 @@ namespace Multi_Threaded_RW
         
         public Reader openRead()
         {
-            Reader r = null;
-            thefile.initRead();
-            r = thefile;
-            return r;
+            lock (this)
+            {
+                Reader r = null;
+                if (!open)
+                {
+                    open = true;
+                    thefile.initRead();
+                    r = thefile;
+                    close();
+                }
+                return r;
+            }
+            
         }
 
         // opens the file for write use; returns handle to file.  
         //   If file cannot be opened, returns null.
         public Writer openWrite()
         {
-            Writer w = thefile;
-            thefile.initWrite();
-            w = thefile;
-            return w;
+            lock (this)
+            {
+                Writer w = thefile;
+                if (!open)
+                {
+                    open = true;
+                    thefile.initWrite();
+                    w = thefile;
+                    close();
+                }
+                return w;
+            }
+            
         }
 
         // closes file
         public void close()
         {
-
+            open = false;
         }
     }
 }
