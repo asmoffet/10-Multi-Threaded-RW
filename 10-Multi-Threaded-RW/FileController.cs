@@ -10,27 +10,27 @@ namespace Multi_Threaded_RW
     public class FileController
     {
         private File thefile;  // the file controlled by this controller
-        private bool open = false;
+        public Status state;
 
         // I.  DECLARE AND USE A STATE VARIABLE THAT REMEMBERS STATE OF thefile's USE
         // II. ADD CODE TO PREVENT TWO THREADS FROM OPENING THE FILE AT THE SAME INSTANT.
 
-        public FileController(File f) { thefile = f; }
+        public FileController(File f, Status s) { thefile = f; state = s; }
 
         // opens the file for read use; returns handle to file.  
         // If file cannot be opened, returns null.
         
         public Reader openRead()
         {
+            
             lock (this)
             {
                 Reader r = null;
-                if (!open)
+                if (state == Status.Closed)
                 {
-                    open = true;
+                    state = Status.Reading;
                     thefile.initRead();
                     r = thefile;
-                    close();
                 }
                 return r;
             }
@@ -41,15 +41,15 @@ namespace Multi_Threaded_RW
         //   If file cannot be opened, returns null.
         public Writer openWrite()
         {
+            
             lock (this)
             {
                 Writer w = thefile;
-                if (!open)
+                if(state == Status.Closed)
                 {
-                    open = true;
+                    state = Status.Writing;
                     thefile.initWrite();
                     w = thefile;
-                    close();
                 }
                 return w;
             }
@@ -59,7 +59,7 @@ namespace Multi_Threaded_RW
         // closes file
         public void close()
         {
-            open = false;
+            state = Status.Closed;
         }
     }
 }

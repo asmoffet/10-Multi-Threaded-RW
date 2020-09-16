@@ -34,7 +34,6 @@ namespace Multi_Threaded_RW
         // handles button-press events to open file and also to read lines from it
         private void button1_Click(object sender, EventArgs e)
         {
-
             if (state == Status.Closed)
             {  // we want to open the file?
                 file = c.openRead();

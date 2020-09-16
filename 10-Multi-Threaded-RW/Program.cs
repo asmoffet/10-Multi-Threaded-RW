@@ -18,7 +18,8 @@ namespace Multi_Threaded_RW
             Application.SetCompatibleTextRenderingDefault(false);
 
             File f = new File();
-            FileController c = new FileController(f);  // controls access to File f
+            Status s = Status.Closed;
+            FileController c = new FileController(f, s);  // controls access to File f
 
             // start two threads, one for the reader and one for the writer:
             new Thread(ReaderThread).Start(c);
